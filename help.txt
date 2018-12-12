@@ -1,0 +1,2 @@
+We assume that you place all files from this krakenexmod repo to /mnt/sdb1/python3-krakenexmod-master/
+If this is not the case, then alter the paths in the files in this repo accordingly.
