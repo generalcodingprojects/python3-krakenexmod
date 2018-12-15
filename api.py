@@ -32,23 +32,30 @@ import version
 
 class API(object):
     """ Maintains a single session between this machine and Kraken.
+
     Specifying a key/secret pair is optional. If not specified, private
     queries will not be possible.
+
     The :py:attr:`session` attribute is a :py:class:`requests.Session`
     object. Customise networking options by manipulating it.
+
     Query responses, as received by :py:mod:`requests`, are retained
     as attribute :py:attr:`response` of this object. It is overwritten
     on each query.
+
     .. note::
        No query rate limiting is performed.
+
     """
     def __init__(self, key='', secret=''):
         """ Create an object with authentication information.
+
         :param key: (optional) key identifier for queries to the API
         :type key: str
         :param secret: (optional) actual private key used to sign messages
         :type secret: str
         :returns: None
+
         """
         self.key = key
         self.secret = secret
@@ -64,25 +71,32 @@ class API(object):
 
     def json_options(self, **kwargs):
         """ Set keyword arguments to be passed to JSON deserialization.
+
         :param kwargs: passed to :py:meth:`requests.Response.json`
         :returns: this instance for chaining
+
         """
         self._json_options = kwargs
         return self
 
     def close(self):
         """ Close this session.
+
         :returns: None
+
         """
         self.session.close()
         return
 
     def load_key(self, path):
         """ Load key and secret from file.
+
         Expected file format is key and secret on separate lines.
+
         :param path: path to keyfile
         :type path: str
         :returns: None
+
         """
         with open(path, 'r') as f:
             self.key = f.readline().strip()
@@ -91,9 +105,11 @@ class API(object):
 
     def _query(self, urlpath, data, headers=None, timeout=None):
         """ Low-level query handling.
+
         .. note::
            Use :py:meth:`query_private` or :py:meth:`query_public`
            unless you have a good reason not to.
+
         :param urlpath: API URL path sans host
         :type urlpath: str
         :param data: API request parameters
@@ -106,6 +122,7 @@ class API(object):
         :type timeout: int or float
         :returns: :py:meth:`requests.Response.json`-deserialised Python object
         :raises: :py:exc:`requests.HTTPError`: if response status not successful
+
         """
         if data is None:
             data = {}
@@ -125,6 +142,7 @@ class API(object):
 
     def query_public(self, method, data=None, timeout=None):
         """ Performs an API query that does not require a valid key/secret pair.
+
         :param method: API method name
         :type method: str
         :param data: (optional) API request parameters
@@ -134,6 +152,7 @@ class API(object):
                         has not been received
         :type timeout: int or float
         :returns: :py:meth:`requests.Response.json`-deserialised Python object
+
         """
         if data is None:
             data = {}
@@ -144,6 +163,7 @@ class API(object):
 
     def query_private(self, method, data=None, timeout=None):
         """ Performs an API query that requires a valid key/secret pair.
+
         :param method: API method name
         :type method: str
         :param data: (optional) API request parameters
@@ -153,6 +173,7 @@ class API(object):
                         has not been received
         :type timeout: int or float
         :returns: :py:meth:`requests.Response.json`-deserialised Python object
+
         """
         if data is None:
             data = {}
@@ -173,12 +194,15 @@ class API(object):
 
     def _nonce(self):
         """ Nonce counter.
+
         :returns: an always-increasing unsigned integer (up to 64 bits wide)
+
         """
         return int(1000*time.time())
 
     def _sign(self, data, urlpath):
         """ Sign request data according to Kraken's scheme.
+
         :param data: API request parameters
         :type data: dict
         :param urlpath: API URL path sans host
@@ -195,4 +219,4 @@ class API(object):
                              message, hashlib.sha512)
         sigdigest = base64.b64encode(signature.digest())
 
-return sigdigest.decode()
+        return sigdigest.decode()
